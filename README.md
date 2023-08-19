@@ -83,10 +83,24 @@ oh_my_zsh_update_frequency: 13
 # May be overridden by `oh_my_zsh: write_zshrc:` under each user.
 oh_my_zsh_write_zshrc: true
 
+# Custom themes
+# These external themes will be installed for those users that specify them as their theme.
+# Themes may require installation of additional dependencies like fonts to display correctly and
+# may have scripts or 'wizards' that must be run to configure themselves
+themes:
+  - name: example-theme-name
+    repo: https://github.com/someuser/example-theme-name.git
+
+# Custom plugins
+# These external plugins will be installed for those users that include them in their plugin list.
+plugins:
+  - name: example-plugin-name
+    repo: https://github.com/someuser/example-plugin-name.git
+
 # User configuration
 # Important: oh-my-zsh is installed per user so you need to specify the users to install it for.
 users:
-  - username: example1
+  - name: example1
     oh_my_zsh:
       theme: robbyrussell
       plugins:
@@ -94,7 +108,7 @@ users:
       update_mode: reminder
       update_frequency: 3
       write_zshrc: false
-  - username: example2
+  - name: example2
     oh_my_zsh:
       theme: robbyrussell
       plugins:
@@ -102,9 +116,20 @@ users:
         - mvn
       update_mode: auto
       update_frequency: 10
-  - username: example3
+  - name: example3
     oh_my_zsh:
       install: false
+  - name: example4
+    oh_my_zsh:
+      theme: powerlevel10k
+      plugins:
+        - git
+        - virtualenv
+        - zsh-autosuggestions
+        - zsh-hist
+        - zsh-syntax-highlighting
+      update_mode: auto
+      update_frequency: 0
 ```
 
 Example Playbook
@@ -114,8 +139,26 @@ Example Playbook
 - hosts: servers
   roles:
     - role: gantsign.oh-my-zsh
+      themes:
+        - name: powerlevel10k
+          repo: https://github.com/romkatv/powerlevel10k.git
+      plugins:
+        - name: zsh-autosuggestions
+          repo: https://github.com/zsh-users/zsh-autosuggestions.git
+        - name: zsh-hist
+          repo: https://github.com/marlonrichert/zsh-hist.git
+        - name: zsh-syntax-highlighting
+          repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
       users:
-        - username: example
+        - name: example
+          oh_my_zsh:
+            theme: powerlevel10k
+            plugins:
+              - git
+              - virtualenv
+              - zsh-autosuggestions
+              - zsh-hist
+              - zsh-syntax-highlighting
 ```
 
 More Roles From GantSign
