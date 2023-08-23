@@ -26,6 +26,46 @@
     loop_var: user
     label: "{{ user.name }}"
 
+- name: Install Oh My Zsh theme
+  ansible.builtin.include_tasks: theme.yml
+  vars:
+    oh_my_zsh: "{{ user.oh_my_zsh | default(oh_my_zsh_defaults) }}"
+  when: oh_my_zsh.install | default(oh_my_zsh_install) | bool
+  loop: "{{ users | flatten(levels=1) }}"
+  loop_control:
+    loop_var: user
+    label: "{{ user.name }}"
+
+- name: Install Oh My Zsh plugins
+  ansible.builtin.include_tasks: plugin.yml
+  vars:
+    oh_my_zsh: "{{ user.oh_my_zsh | default(oh_my_zsh_defaults) }}"
+  when: oh_my_zsh.install | default(oh_my_zsh_install) | bool
+  loop: "{{ users | flatten(levels=1) }}"
+  loop_control:
+    loop_var: user
+    label: "{{ user.name }}"
+
+- name: Install Oh My Zsh fregments
+  ansible.builtin.include_tasks: fregment.yml
+  vars:
+    oh_my_zsh: "{{ user.oh_my_zsh | default(oh_my_zsh_defaults) }}"
+  when: oh_my_zsh.install | default(oh_my_zsh_install) | bool
+  loop: "{{ users | flatten(levels=1) }}"
+  loop_control:
+    loop_var: user
+    label: "{{ user.name }}"
+
+- name: Install Oh My Zsh scripts
+  ansible.builtin.include_tasks: script.yml
+  vars:
+    oh_my_zsh: "{{ user.oh_my_zsh | default(oh_my_zsh_defaults) }}"
+  when: oh_my_zsh.install | default(oh_my_zsh_install) | bool
+  loop: "{{ users | flatten(levels=1) }}"
+  loop_control:
+    loop_var: user
+    label: "{{ user.name }}"
+
 - name: Console setup for Debian family distributions
   ansible.builtin.include_tasks: debian-console-setup.yml
   when: ansible_facts.os_family == 'Debian'

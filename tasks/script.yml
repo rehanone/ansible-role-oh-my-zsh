@@ -1,0 +1,24 @@
+# code: language=ansible
+---
+- name: Set merged_scripts list
+  set_fact:
+    merged_scripts: >-
+      {{ (oh_my_zsh.scripts | default(oh_my_zsh_scripts) | list) | community.general.lists_mergeby(
+                    scripts,
+                    'name',
+                    recursive=True,
+                    list_merge='replace'
+                 ) }}
+
+- name: "Create custom scripts"
+  become: true
+  become_user: "{{ user.name }}"
+  ansible.builtin.copy:
+    content: '{{ script.content }}'
+    dest: "~{{ user.name }}/{{ script.path }}/{{ script.name }}"
+    mode: '{{ script.mode }}'
+  loop: "{{ merged_scripts }}"
+  loop_control:
+    loop_var: script
+    label: '{{ script.name }}'
+  when: script.path is defined and script.content is defined and script.mode is defined

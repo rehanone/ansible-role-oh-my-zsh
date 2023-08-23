@@ -1,0 +1,26 @@
+# code: language=ansible
+---
+- name: Set all_plugins list
+  set_fact:
+    all_plugins: '{{ oh_my_zsh.plugins | default(oh_my_zsh_plugins) | list }}'
+
+- name: "Clone custom plugins (skipped if using builtin plugin)"
+  become: true
+  become_user: "{{ user.name }}"
+  ansible.builtin.git:
+    repo: "{{ plugin.repo }}"
+    dest: "~{{ user.name }}/.oh-my-zsh/custom/plugins/{{ plugin.name }}"
+  loop: "{{ plugins | flatten(levels=1) }}"
+  loop_control:
+    loop_var: plugin
+    label: '{{ plugin.name }}'
+  when: "plugin.name in (all_plugins)"
+
+- name: "Set plugins in file ~{{ user.name }}/.zshrc"
+  become: true
+  become_user: "{{ user.name }}"
+  ansible.builtin.lineinfile:
+    path: "~{{ user.name }}/.zshrc"
+    regexp: |- 
+      ^plugins=
+    line: "plugins=({{ all_plugins | join(' ') }})"

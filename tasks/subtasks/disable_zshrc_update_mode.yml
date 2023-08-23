@@ -1,0 +1,10 @@
+# code: language=ansible
+---
+- name: "Disable update mode {{ update_mode }} in file ~{{ username }}/.zshrc"
+  become: true
+  become_user: "{{ username }}"
+  ansible.builtin.lineinfile:
+    path: "~{{ username }}/.zshrc"
+    regexp: |- 
+      .*zstyle\ \':omz:update\'\ mode\ {{ update_mode }}.*
+    line: "# zstyle ':omz:update' mode {{ update_mode }}"

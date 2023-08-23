@@ -1,42 +1,13 @@
 # code: language=ansible
 ---
 - name: Clone oh-my-zsh
-  tags:
-    # Suppress warning: [ANSIBLE0006] git used in place of git module
-    # Git module doesn't allow us to set `core.autocrlf=input`.
-    - skip_ansible_lint
-  become: true
-  become_user: "{{ user.name }}"
-  # core.autocrlf=input prevents https://github.com/ohmyzsh/ohmyzsh/issues/4402
-  ansible.builtin.command: 'git clone -c core.autocrlf=input --depth=1 https://github.com/ohmyzsh/ohmyzsh.git .oh-my-zsh'
-  args:
-    chdir: "~{{ user.name }}"
-    creates: "~{{ user.name }}/.oh-my-zsh"
-
-- name: "Clone custom themes (skipped if using builtin theme)"
   become: true
   become_user: "{{ user.name }}"
   ansible.builtin.git:
-    repo: "{{ theme.repo }}"
-    dest: "~{{ user.name }}/.oh-my-zsh/custom/themes/{{ theme.name }}"
+    repo: "{{ oh_my_zsh_source }}"
+    dest: "~{{ user.name }}/.oh-my-zsh"
     depth: 1
-  loop: "{{ themes | flatten(levels=1) }}"
-  loop_control:
-    loop_var: theme
-    label: '{{ theme.name }}'
-  when: "theme.name == (oh_my_zsh.theme | default(oh_my_zsh_theme))"
-
-- name: "Clone custom plugins (skipped if using builtin plugin)"
-  become: true
-  become_user: "{{ user.name }}"
-  ansible.builtin.git:
-    repo: "{{ plugin.repo }}"
-    dest: "~{{ user.name }}/.oh-my-zsh/custom/plugins/{{ plugin.name }}"
-  loop: "{{ plugins | flatten(levels=1) }}"
-  loop_control:
-    loop_var: plugin
-    label: '{{ plugin.name }}'
-  when: "plugin.name in (oh_my_zsh.plugins | default(oh_my_zsh_plugins) | list)"
+  register: updated_main_repo
 
 - name: Set permissions of oh-my-zsh
   become: true
@@ -48,35 +19,49 @@
     mode: 'go-w'
     recurse: true
 
-# If the desktop is joined to a domain, the user may not be managed locally.
-- name: Check if user managed locally
-  shell: "grep -i {{ user.name }} /etc/passwd"
-  register: presence
-  failed_when: false
-  changed_when: presence.rc == '0'
-
 - name: Set default shell
   become: true
   ansible.builtin.user:
     name: "{{ user.name }}"
     shell: "{{ oh_my_zsh_zsh_path }}"
-  when: presence is changed
+  when: oh_my_zsh.set_shell | default(oh_my_zsh_set_shell) | bool
 
-- name: Check if user theme is custom
-  ansible.builtin.stat:
-    path: "~{{ user.name }}/.oh-my-zsh/custom/themes/{{ oh_my_zsh.theme | default(oh_my_zsh_theme) }}"
-  register: customtheme
-
-- name: Write .zshrc
+- name: "Copy ~{{ user.name }}/.oh-my-zsh/templates/zshrc.zsh-template to ~{{ user.name }}/.zshrc"
   become: true
   become_user: "{{ user.name }}"
-  ansible.builtin.template:
-    src: "{{ oh_my_zsh_template }}"
+  ansible.builtin.copy:
+    src: "~{{ user.name }}/.oh-my-zsh/templates/zshrc.zsh-template"
     dest: "~{{ user.name }}/.zshrc"
-    backup: true
+    remote_src: yes
     mode: 'u=rw,go=r'
-  when: oh_my_zsh.write_zshrc | default(oh_my_zsh_write_zshrc) | bool
+    backup: true
+  when: updated_main_repo.changed and (oh_my_zsh.update_zshrc | default(oh_my_zsh_update_zshrc) | bool)
 
-- name: Garbage Cleanup
-  ansible.builtin.set_fact:
-    customtheme: {}
+- name: Enable update frequency in .zshrc
+  ansible.builtin.include_tasks: subtasks/enable_zshrc_update_frequency.yml
+  vars:
+    username: '{{ user.name }}'
+    update_frequency: '{{ oh_my_zsh.update_frequency | default(oh_my_zsh_update_frequency) | int }}'
+  when: (oh_my_zsh.update_frequency | default(oh_my_zsh_update_frequency) | int) != oh_my_zsh_update_frequency
+
+- name: Disable update frequency in .zshrc
+  ansible.builtin.include_tasks: subtasks/disable_zshrc_update_frequency.yml
+  vars:
+    username: '{{ user.name }}'
+    update_frequency: '{{ oh_my_zsh_update_frequency }}'
+  when: (oh_my_zsh.update_frequency | default(oh_my_zsh_update_frequency) | int) == oh_my_zsh_update_frequency
+
+- name: Enable update mode in .zshrc
+  ansible.builtin.include_tasks: subtasks/enable_zshrc_update_mode.yml
+  vars:
+    username: '{{ user.name }}'
+    update_mode: '{{ oh_my_zsh.update_mode | default(oh_my_zsh_update_mode) }}'
+
+- name: Disable other update modes in .zshrc
+  ansible.builtin.include_tasks: subtasks/disable_zshrc_update_mode.yml
+  vars:
+    username: '{{ user.name }}'
+    update_mode: '{{ mode }}'
+  loop: '{{ oh_my_zsh_update_modes | difference(oh_my_zsh.update_mode | default(oh_my_zsh_update_mode) | string) }}'
+  loop_control:
+    loop_var: mode

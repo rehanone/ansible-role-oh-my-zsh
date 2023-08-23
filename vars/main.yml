@@ -5,12 +5,22 @@ oh_my_zsh_defaults:
   theme: "{{ oh_my_zsh_theme }}"
   plugins: "{{ oh_my_zsh_plugins }}"
   install: "{{ oh_my_zsh_install }}"
+  update_zshrc: "{{ oh_my_zsh_update_zshrc }}"
   update_mode: "{{ oh_my_zsh_update_mode }}"
   update_frequency: "{{ oh_my_zsh_update_frequency }}"
-  write_zshrc: "{{ oh_my_zsh_write_zshrc }}"
-  template: "{{ oh_my_zsh_template }}"
+  set_shell: "{{ oh_my_zsh_set_shell }}"
+  zshrc_fregments: "{{ oh_my_zsh_zshrc_fregments }}"
+  scripts: "{{ oh_my_zsh_scripts }}"
 
 # Dependencies for Oh My Zsh
 oh_my_zsh_dependencies:
   - git
   - zsh
+
+# The source repo for oh-my-zsh
+oh_my_zsh_source: 'https://github.com/ohmyzsh/ohmyzsh.git'
+
+oh_my_zsh_update_modes:
+  - disabled
+  - auto
+  - reminder

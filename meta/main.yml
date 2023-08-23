@@ -12,6 +12,7 @@ galaxy_info:
     - name: Fedora
       versions:
         - '35'
+        - '36'
     - name: opensuse
       versions:
         - '15.3'
@@ -19,14 +20,17 @@ galaxy_info:
       versions:
         - bionic
         - focal
+        - jammy
     - name: Debian
       versions:
         - stretch
         - buster
         - bullseye
+        - bookworm
     - name: FreeBSD
       versions:
         - '13.0'
+        - '14.0'
   galaxy_tags:
     - ohmyzsh
     - zsh
