@@ -1,0 +1,23 @@
+# code: language=ansible
+---
+- name: "Clone custom themes (skipped if using builtin theme)"
+  become: true
+  become_user: "{{ user.name }}"
+  ansible.builtin.git:
+    repo: "{{ theme.repo }}"
+    dest: "~{{ user.name }}/.oh-my-zsh/custom/themes/{{ theme.name }}"
+    depth: 1
+  loop: "{{ themes | flatten(levels=1) }}"
+  loop_control:
+    loop_var: theme
+    label: '{{ theme.name }}'
+  when: "theme.name == (oh_my_zsh.theme | default(oh_my_zsh_theme))"
+
+- name: "Set theme in file ~{{ user.name }}/.zshrc"
+  become: true
+  become_user: "{{ user.name }}"
+  ansible.builtin.lineinfile:
+    path: "~{{ user.name }}/.zshrc"
+    regexp: |- 
+      ^ZSH_THEME
+    line: "ZSH_THEME=\"{{ oh_my_zsh.theme }}\""

@@ -25,7 +25,19 @@ oh_my_zsh_update_frequency: 13
 
 # Whether to write the ~/.zshrc file
 # May be overridden by `oh_my_zsh: write_zshrc:` under each user.
-oh_my_zsh_write_zshrc: true
+# oh_my_zsh_write_zshrc: true
+
+# The update behaviour of the .zshrc file as the template file changes in upstream repo. The default value is `true`
+oh_my_zsh_update_zshrc: true
 
 # Default .zshrc template. Can be overridden to use an external template.
-oh_my_zsh_template: templates/zshrc.j2
+# oh_my_zsh_template: templates/zshrc.j2
+
+# Set user's shell to ZSH
+oh_my_zsh_set_shell: true
+
+# Fregments that get appeneded at the end of the .zshrc file.
+oh_my_zsh_zshrc_fregments: []
+
+# Scripts that get created in the users home directory.
+oh_my_zsh_scripts: []
