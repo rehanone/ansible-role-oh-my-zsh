@@ -10,6 +10,18 @@
                     list_merge='replace'
                  ) }}
 
+- name: 'Ensure {{ script.path }} directory exists'
+  become: true
+  become_user: "{{ user.name }}"
+  ansible.builtin.file:
+    path: "~{{ user.name }}/{{ script.path }}"
+    state: directory
+  loop: "{{ merged_scripts }}"
+  loop_control:
+    loop_var: script
+    label: '~{{ user.name }}/{{ script.path }}'
+  when: script.path is defined and script.content is defined and script.mode is defined
+
 - name: "Create custom scripts"
   become: true
   become_user: "{{ user.name }}"
