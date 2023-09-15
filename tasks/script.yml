@@ -1,7 +1,7 @@
 # code: language=ansible
 ---
 - name: Set merged_scripts list
-  set_fact:
+  ansible.builtin.set_fact:
     merged_scripts: >-
       {{ (oh_my_zsh.scripts | default(oh_my_zsh_scripts) | list) | community.general.lists_mergeby(
                     scripts,
@@ -10,26 +10,27 @@
                     list_merge='replace'
                  ) }}
 
-- name: 'Ensure {{ script.path }} directory exists'
+- name: 'Ensure directory exists: {{ script.path }}'
   become: true
-  become_user: "{{ user.name }}"
+  become_user: '{{ user.name }}'
   ansible.builtin.file:
-    path: "~{{ user.name }}/{{ script.path }}"
+    path: '~{{ user.name }}/{{ script.path }}'
     state: directory
-  loop: "{{ merged_scripts }}"
+    mode: '0755'
+  loop: '{{ merged_scripts }}'
   loop_control:
     loop_var: script
     label: '~{{ user.name }}/{{ script.path }}'
   when: script.path is defined and script.content is defined and script.mode is defined
 
-- name: "Create custom scripts"
+- name: 'Create custom scripts'
   become: true
-  become_user: "{{ user.name }}"
+  become_user: '{{ user.name }}'
   ansible.builtin.copy:
     content: '{{ script.content }}'
-    dest: "~{{ user.name }}/{{ script.path }}/{{ script.name }}"
+    dest: '~{{ user.name }}/{{ script.path }}/{{ script.name }}'
     mode: '{{ script.mode }}'
-  loop: "{{ merged_scripts }}"
+  loop: '{{ merged_scripts }}'
   loop_control:
     loop_var: script
     label: '{{ script.name }}'

@@ -1,10 +1,10 @@
 # code: language=ansible
 ---
-- name: "Set update frequency to {{ update_frequency }} in file ~{{ username }}/.zshrc"
+- name: 'Set update frequency in zshrc to: {{ update_frequency }}'
   become: true
-  become_user: "{{ username }}"
+  become_user: '{{ username }}'
   ansible.builtin.lineinfile:
-    path: "~{{ username }}/.zshrc"
+    path: '~{{ username }}/.zshrc'
     regexp: |- 
       .*zstyle\ \':omz:update\'\ frequency .*
     line: "zstyle ':omz:update' frequency {{ update_frequency }}"

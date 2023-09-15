@@ -2,15 +2,15 @@
 ---
 # Default dictionary
 oh_my_zsh_defaults:
-  theme: "{{ oh_my_zsh_theme }}"
-  plugins: "{{ oh_my_zsh_plugins }}"
-  install: "{{ oh_my_zsh_install }}"
-  update_zshrc: "{{ oh_my_zsh_update_zshrc }}"
-  update_mode: "{{ oh_my_zsh_update_mode }}"
-  update_frequency: "{{ oh_my_zsh_update_frequency }}"
-  set_shell: "{{ oh_my_zsh_set_shell }}"
-  zshrc_fregments: "{{ oh_my_zsh_zshrc_fregments }}"
-  scripts: "{{ oh_my_zsh_scripts }}"
+  theme: '{{ oh_my_zsh_theme }}'
+  plugins: '{{ oh_my_zsh_plugins }}'
+  install: '{{ oh_my_zsh_install }}'
+  update_zshrc: '{{ oh_my_zsh_update_zshrc }}'
+  update_mode: '{{ oh_my_zsh_update_mode }}'
+  update_frequency: '{{ oh_my_zsh_update_frequency }}'
+  set_shell: '{{ oh_my_zsh_set_shell }}'
+  zshrc_fregments: '{{ oh_my_zsh_zshrc_fregments }}'
+  scripts: '{{ oh_my_zsh_scripts }}'
 
 # Dependencies for Oh My Zsh
 oh_my_zsh_dependencies:
@@ -19,6 +19,7 @@ oh_my_zsh_dependencies:
 
 # The source repo for oh-my-zsh
 oh_my_zsh_source: 'https://github.com/ohmyzsh/ohmyzsh.git'
+oh_my_zsh_revision: master
 
 oh_my_zsh_update_modes:
   - disabled

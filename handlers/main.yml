@@ -3,3 +3,4 @@
   become: true
   ansible.builtin.command: >-
     /usr/sbin/dpkg-reconfigure -f noninteractive console-setup
+  changed_when: false
