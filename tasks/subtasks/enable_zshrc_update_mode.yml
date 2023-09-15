@@ -1,10 +1,10 @@
 # code: language=ansible
 ---
-- name: "Enable update mode {{ update_mode }} in file ~{{ user.name }}/.zshrc"
+- name: 'Enable update mode in zshrc to: {{ update_mode }}'
   become: true
-  become_user: "{{ username }}"
+  become_user: '{{ username }}'
   ansible.builtin.lineinfile:
-    path: "~{{ username }}/.zshrc"
+    path: '~{{ username }}/.zshrc'
     regexp: |- 
       .*zstyle\ \':omz:update\'\ mode\ {{ update_mode }}.*
     line: "zstyle ':omz:update' mode {{ update_mode }}"
