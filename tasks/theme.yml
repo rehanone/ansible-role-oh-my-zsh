@@ -21,4 +21,4 @@
     path: '~{{ user.name }}/.zshrc'
     regexp: |- 
       ^ZSH_THEME
-    line: 'ZSH_THEME=\"{{ oh_my_zsh.theme }}\"'
+    line: 'ZSH_THEME="{{ oh_my_zsh.theme }}"'

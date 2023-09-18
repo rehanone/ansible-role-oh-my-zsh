@@ -25,11 +25,12 @@
 
 - name: 'Create custom scripts'
   become: true
-  become_user: '{{ user.name }}'
   ansible.builtin.copy:
     content: '{{ script.content }}'
     dest: '~{{ user.name }}/{{ script.path }}/{{ script.name }}'
     mode: '{{ script.mode }}'
+    owner: '{{ user.name }}'
+    group: '{{ user.name }}'
   loop: '{{ merged_scripts }}'
   loop_control:
     loop_var: script
