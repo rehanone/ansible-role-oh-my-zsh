@@ -2,3 +2,6 @@
 ---
 # The path to the ZSH executable
 oh_my_zsh_zsh_path: /usr/bin/zsh
+
+# The path to the bash executable
+oh_my_zsh_bash_path: /usr/bin/bash

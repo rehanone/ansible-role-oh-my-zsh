@@ -2,9 +2,9 @@
 ---
 # Default dictionary
 oh_my_zsh_defaults:
+  state: '{{ oh_my_zsh_state }}'
   theme: '{{ oh_my_zsh_theme }}'
   plugins: '{{ oh_my_zsh_plugins }}'
-  install: '{{ oh_my_zsh_install }}'
   update_zshrc: '{{ oh_my_zsh_update_zshrc }}'
   update_mode: '{{ oh_my_zsh_update_mode }}'
   update_frequency: '{{ oh_my_zsh_update_frequency }}'

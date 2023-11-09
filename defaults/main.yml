@@ -8,8 +8,8 @@ oh_my_zsh_plugins:
   - git
 
 # Whether to install by default for all specified users.
-# May be overridden by `oh_my_zsh: install:` under each user.
-oh_my_zsh_install: true
+# May be overridden by `oh_my_zsh: state:` under each user.
+oh_my_zsh_state: present
 
 # Default update mode for Oh-My-Zsh
 # accepted values are:
