@@ -7,7 +7,7 @@ import re
     'test_usr2',
     'test_usr6',
 ])
-def test_oh_my_zsh_install(host, name):
+def test_oh_my_zsh_state(host, name):
     oh_my_zsh = host.file('/home/' + name + '/.oh-my-zsh')
     assert oh_my_zsh.exists
     assert oh_my_zsh.is_directory

@@ -20,7 +20,7 @@
   ansible.builtin.include_tasks: install.yml
   vars:
     oh_my_zsh: '{{ user.oh_my_zsh | default(oh_my_zsh_defaults) }}'
-  when: oh_my_zsh.install | default(oh_my_zsh_install) | bool
+  when: (oh_my_zsh.state | default(oh_my_zsh_state)) == 'present'
   loop: '{{ users | flatten(levels=1) }}'
   loop_control:
     loop_var: user
@@ -30,7 +30,7 @@
   ansible.builtin.include_tasks: theme.yml
   vars:
     oh_my_zsh: '{{ user.oh_my_zsh | default(oh_my_zsh_defaults) }}'
-  when: oh_my_zsh.install | default(oh_my_zsh_install) | bool
+  when: (oh_my_zsh.state | default(oh_my_zsh_state)) == 'present'
   loop: '{{ users | flatten(levels=1) }}'
   loop_control:
     loop_var: user
@@ -40,7 +40,7 @@
   ansible.builtin.include_tasks: plugin.yml
   vars:
     oh_my_zsh: '{{ user.oh_my_zsh | default(oh_my_zsh_defaults) }}'
-  when: oh_my_zsh.install | default(oh_my_zsh_install) | bool
+  when: (oh_my_zsh.state | default(oh_my_zsh_state)) == 'present'
   loop: '{{ users | flatten(levels=1) }}'
   loop_control:
     loop_var: user
@@ -50,7 +50,7 @@
   ansible.builtin.include_tasks: fregment.yml
   vars:
     oh_my_zsh: '{{ user.oh_my_zsh | default(oh_my_zsh_defaults) }}'
-  when: oh_my_zsh.install | default(oh_my_zsh_install) | bool
+  when: (oh_my_zsh.state | default(oh_my_zsh_state)) == 'present'
   loop: '{{ users | flatten(levels=1) }}'
   loop_control:
     loop_var: user
@@ -60,7 +60,7 @@
   ansible.builtin.include_tasks: script.yml
   vars:
     oh_my_zsh: '{{ user.oh_my_zsh | default(oh_my_zsh_defaults) }}'
-  when: oh_my_zsh.install | default(oh_my_zsh_install) | bool
+  when: (oh_my_zsh.state | default(oh_my_zsh_state)) == 'present'
   loop: '{{ users | flatten(levels=1) }}'
   loop_control:
     loop_var: user
@@ -69,3 +69,13 @@
 - name: Console setup for Debian family distributions
   ansible.builtin.include_tasks: debian-console-setup.yml
   when: ansible_facts.os_family == 'Debian'
+
+- name: Uninstall Oh My Zsh
+  ansible.builtin.include_tasks: uninstall.yml
+  vars:
+    oh_my_zsh: '{{ user.oh_my_zsh | default(oh_my_zsh_defaults) }}'
+  when: (oh_my_zsh.state | default(oh_my_zsh_state)) == 'absent'
+  loop: '{{ users | flatten(levels=1) }}'
+  loop_control:
+    loop_var: user
+    label: '{{ user.name }}'

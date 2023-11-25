@@ -63,7 +63,7 @@
       oh_my_zsh_plugins:
         - test_plugin1
         - test_plugin2
-      oh_my_zsh_install: false
+      oh_my_zsh_state: absent
       oh_my_write_zshrc: false
       users:
         - name: test_usr5
