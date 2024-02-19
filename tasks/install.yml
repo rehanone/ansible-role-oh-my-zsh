@@ -63,6 +63,6 @@
   vars:
     username: '{{ user.name }}'
     update_mode: '{{ mode }}'
-  loop: '{{ oh_my_zsh_update_modes | difference(oh_my_zsh.update_mode | default(oh_my_zsh_update_mode) | string) }}'
+  loop: '{{ oh_my_zsh_update_modes | difference( [oh_my_zsh.update_mode | default(oh_my_zsh_update_mode)] ) }}'
   loop_control:
     loop_var: mode
