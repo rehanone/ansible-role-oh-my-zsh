@@ -25,21 +25,26 @@ Requirements
             * Stretch (9)
             * Buster (10)
             * Bullseye (11)
+            * Bookworm (12)
 
         * Ubuntu
 
             * Bionic (18.04)
             * Focal (20.04)
+            * Jammy (22.04)
+            * Noble (24.04)
 
     * RedHat Family
 
         * Rocky Linux
 
             * 8
+            * 9
 
         * Fedora
 
-            * 35
+            * 39
+            * 40
 
     * SUSE Family
 

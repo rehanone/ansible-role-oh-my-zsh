@@ -27,6 +27,12 @@ oh_my_zsh_update_frequency: 13
 # May be overridden by `oh_my_zsh: write_zshrc:` under each user.
 # oh_my_zsh_write_zshrc: true
 
+# Keep backup of the previous .zshrc file when it is updated. The default value is `true`
+oh_my_zsh_backup_zshrc: true
+
+# THe count of last backups to keep of the previous .zshrc file when it is updated. The default value is 10
+oh_my_zsh_backup_keep_last_count: 10
+
 # The update behaviour of the .zshrc file as the template file changes in upstream repo. The default value is `true`
 oh_my_zsh_update_zshrc: true
 
