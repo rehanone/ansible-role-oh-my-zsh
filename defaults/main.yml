@@ -1,5 +1,14 @@
 # code: language=ansible
 ---
+# Allows logging of the final configuration dictionary with all defaulted values which can be helpful for debugging
+# Default value for debug is false
+oh_my_zsh_debug: false
+
+# The source repo for oh-my-zsh
+oh_my_zsh_upstream_repository: 'https://github.com/ohmyzsh/ohmyzsh.git'
+oh_my_zsh_upstream_revision: master
+oh_my_zsh_upstream_manage: true
+
 # Default theme
 oh_my_zsh_theme: robbyrussell
 

@@ -4,10 +4,11 @@
   become: true
   become_user: '{{ user.name }}'
   ansible.builtin.git:
-    repo: '{{ oh_my_zsh_source }}'
+    repo: '{{ upstream.repository }}'
     dest: '~{{ user.name }}/.oh-my-zsh'
     depth: 1
-    version: '{{ oh_my_zsh_revision }}'
+    version: '{{ upstream.revision }}'
+  when: upstream.manage
   register: updated_main_repo
 
 # - name: Set permissions of oh-my-zsh
@@ -20,66 +21,66 @@
 #     mode: 'go-w'
 #     recurse: true
 
-- name: Set default shell
-  become: true
-  ansible.builtin.user:
-    name: '{{ user.name }}'
-    shell: '{{ oh_my_zsh_zsh_path }}'
-  when: oh_my_zsh.set_shell | default(oh_my_zsh_set_shell) | bool
+# - name: Set default shell
+#   become: true
+#   ansible.builtin.user:
+#     name: '{{ user.name }}'
+#     shell: '{{ oh_my_zsh_zsh_path }}'
+#   when: oh_my_zsh.set_shell | default(oh_my_zsh_set_shell) | bool
 
-- name: 'Copy zshrc.zsh-template to .zshrc for user: {{ user.name }}'
-  become: true
-  become_user: '{{ user.name }}'
-  ansible.builtin.copy:
-    src: '~{{ user.name }}/.oh-my-zsh/templates/zshrc.zsh-template'
-    dest: '~{{ user.name }}/.zshrc'
-    remote_src: true
-    mode: 'u=rw,go=r'
-    backup: oh_my_zsh.backup_zshrc | default(oh_my_zsh_backup_zshrc) | bool
-  when: updated_main_repo.changed and (oh_my_zsh.update_zshrc | default(oh_my_zsh_update_zshrc) | bool)
+# - name: 'Copy zshrc.zsh-template to .zshrc for user: {{ user.name }}'
+#   become: true
+#   become_user: '{{ user.name }}'
+#   ansible.builtin.copy:
+#     src: '~{{ user.name }}/.oh-my-zsh/templates/zshrc.zsh-template'
+#     dest: '~{{ user.name }}/.zshrc'
+#     remote_src: true
+#     mode: 'u=rw,go=r'
+#     backup: oh_my_zsh.backup_zshrc | default(oh_my_zsh_backup_zshrc) | bool
+#   when: updated_main_repo.changed and (oh_my_zsh.update_zshrc | default(oh_my_zsh_update_zshrc) | bool)
 
-- name: Find previous backups of .zshrc
-  become: true
-  ansible.builtin.shell:
-    cmd: 'ls -1tr .zshrc.[0-9]*'
-    chdir: '~{{ user.name }}'
-  changed_when: false
-  register: backups_to_clean
+# - name: Find previous backups of .zshrc
+#   become: true
+#   ansible.builtin.shell:
+#     cmd: 'ls -1tr .zshrc.[0-9]*'
+#     chdir: '~{{ user.name }}'
+#   changed_when: false
+#   register: backups_to_clean
 
-- name: Delete previous backups of .zshrc
-  ansible.builtin.file:
-    path: '~{{ user.name }}/{{ item }}'
-    state: absent
-  with_items: >-
-    {{
-      backups_to_clean.stdout_lines[:-(oh_my_zsh.backup_keep_last_count | default(oh_my_zsh_backup_keep_last_count))]
-    }}
+# - name: Delete previous backups of .zshrc
+#   ansible.builtin.file:
+#     path: '~{{ user.name }}/{{ item }}'
+#     state: absent
+#   with_items: >-
+#     {{
+#       backups_to_clean.stdout_lines[:-(oh_my_zsh.backup_keep_last_count | default(oh_my_zsh_backup_keep_last_count))]
+#     }}
 
-- name: Enable update frequency in .zshrc
-  ansible.builtin.include_tasks: subtasks/enable_zshrc_update_frequency.yml
-  vars:
-    username: '{{ user.name }}'
-    update_frequency: '{{ oh_my_zsh.update_frequency | default(oh_my_zsh_update_frequency) | int }}'
-  when: (oh_my_zsh.update_frequency | default(oh_my_zsh_update_frequency) | int) != oh_my_zsh_update_frequency
+# - name: Enable update frequency in .zshrc
+#   ansible.builtin.include_tasks: subtasks/enable_zshrc_update_frequency.yml
+#   vars:
+#     username: '{{ user.name }}'
+#     update_frequency: '{{ oh_my_zsh.update_frequency | default(oh_my_zsh_update_frequency) | int }}'
+#   when: (oh_my_zsh.update_frequency | default(oh_my_zsh_update_frequency) | int) != oh_my_zsh_update_frequency
 
-- name: Disable update frequency in .zshrc
-  ansible.builtin.include_tasks: subtasks/disable_zshrc_update_frequency.yml
-  vars:
-    username: '{{ user.name }}'
-    update_frequency: '{{ oh_my_zsh_update_frequency }}'
-  when: (oh_my_zsh.update_frequency | default(oh_my_zsh_update_frequency) | int) == oh_my_zsh_update_frequency
+# - name: Disable update frequency in .zshrc
+#   ansible.builtin.include_tasks: subtasks/disable_zshrc_update_frequency.yml
+#   vars:
+#     username: '{{ user.name }}'
+#     update_frequency: '{{ oh_my_zsh_update_frequency }}'
+#   when: (oh_my_zsh.update_frequency | default(oh_my_zsh_update_frequency) | int) == oh_my_zsh_update_frequency
 
-- name: Enable update mode in .zshrc
-  ansible.builtin.include_tasks: subtasks/enable_zshrc_update_mode.yml
-  vars:
-    username: '{{ user.name }}'
-    update_mode: '{{ oh_my_zsh.update_mode | default(oh_my_zsh_update_mode) }}'
+# - name: Enable update mode in .zshrc
+#   ansible.builtin.include_tasks: subtasks/enable_zshrc_update_mode.yml
+#   vars:
+#     username: '{{ user.name }}'
+#     update_mode: '{{ oh_my_zsh.update_mode | default(oh_my_zsh_update_mode) }}'
 
-- name: Disable other update modes in .zshrc
-  ansible.builtin.include_tasks: subtasks/disable_zshrc_update_mode.yml
-  vars:
-    username: '{{ user.name }}'
-    update_mode: '{{ mode }}'
-  loop: '{{ oh_my_zsh_update_modes | difference( [oh_my_zsh.update_mode | default(oh_my_zsh_update_mode)] ) }}'
-  loop_control:
-    loop_var: mode
+# - name: Disable other update modes in .zshrc
+#   ansible.builtin.include_tasks: subtasks/disable_zshrc_update_mode.yml
+#   vars:
+#     username: '{{ user.name }}'
+#     update_mode: '{{ mode }}'
+#   loop: '{{ oh_my_zsh_update_modes | difference( [oh_my_zsh.update_mode | default(oh_my_zsh_update_mode)] ) }}'
+#   loop_control:
+#     loop_var: mode
