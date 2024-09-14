@@ -12,7 +12,21 @@
   loop_control:
     loop_var: theme
     label: '{{ theme.name }}'
-  when: 'theme.name == (oh_my_zsh.theme | default(oh_my_zsh_theme))'
+  when: theme.name == user.activate.theme
+
+- name: Symlink custom theme file in the main custom directory
+  become: true
+  become_user: '{{ user.name }}'
+  ansible.builtin.file:
+    src: '~{{ user.name }}/.oh-my-zsh/custom/themes/{{ theme.name }}/{{ theme.file }}'
+    dest: '~{{ user.name }}/.oh-my-zsh/custom/themes/{{ theme.file }}'
+    force: true
+    state: link
+  loop: '{{ themes | flatten(levels=1) }}'
+  loop_control:
+    loop_var: theme
+    label: '{{ theme.name }}'
+  when: theme.name == user.activate.theme
 
 - name: 'Set theme zsh for user: {{ user.name }}'
   become: true
@@ -21,4 +35,48 @@
     path: '~{{ user.name }}/.zshrc'
     regexp: |- 
       ^ZSH_THEME
-    line: 'ZSH_THEME="{{ oh_my_zsh.theme }}"'
+    line: 'ZSH_THEME="{{ user.activate.theme }}"'
+
+# --- Cleanup unused themes ---
+- name: Find in use theme files in the custom themes directory (when using built-in theme)
+  ansible.builtin.set_fact:
+    in_use_theme_files: >-
+      {{
+        [ 'example.zsh-theme' ] | default([])
+      }}
+  loop: '{{ themes | flatten(levels=1) }}'
+  loop_control:
+    loop_var: theme
+    label: '{{ theme.name }}'
+  when: theme.name != user.activate.theme
+
+- name: Find in use theme files in the custom themes directory (when using custom theme)
+  ansible.builtin.set_fact:
+    in_use_theme_files: >-
+      {{
+        [ 'example.zsh-theme', theme.name, theme.file ] | default([])
+      }}
+  loop: '{{ themes | flatten(levels=1) }}'
+  loop_control:
+    loop_var: theme
+    label: '{{ theme.name }}'
+  when: theme.name == user.activate.theme
+
+- name: Find all theme files in the custom themes directory
+  become: true
+  become_user: '{{ user.name }}'
+  ansible.builtin.command: 'ls -1 ~{{ user.name }}/.oh-my-zsh/custom/themes'
+  changed_when: false
+  register: all_theme_files
+
+- name: Find unused theme files in the custom themes directory
+  ansible.builtin.set_fact:
+    unused_theme_files: '{{ all_theme_files.stdout_lines | difference(in_use_theme_files) }}'
+
+- name: Remove unused theme files in the custom themes directory
+  become: true
+  become_user: '{{ user.name }}'
+  ansible.builtin.file:
+    path: '~{{ user.name }}/.oh-my-zsh/custom/themes/{{ item }}'
+    state: absent
+  with_items: '{{ unused_theme_files }}'

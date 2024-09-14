@@ -1,10 +1,6 @@
 # code: language=ansible
 ---
-- name: Set all_plugins list
-  ansible.builtin.set_fact:
-    all_plugins: '{{ oh_my_zsh.plugins | default(oh_my_zsh_plugins) | list }}'
-
-- name: 'Clone custom plugins (skipped if using builtin plugin)'
+- name: Clone custom plugins (skipped if using builtin plugin)
   become: true
   become_user: '{{ user.name }}'
   ansible.builtin.git:
@@ -16,7 +12,7 @@
   loop_control:
     loop_var: plugin
     label: '{{ plugin.name }}'
-  when: 'plugin.name in (all_plugins)'
+  when: 'plugin.name in (user.activate.plugins)'
 
 - name: 'Set plugins for user: {{ user.name }}'
   become: true
@@ -25,4 +21,4 @@
     path: '~{{ user.name }}/.zshrc'
     regexp: |- 
       ^plugins=
-    line: "plugins=({{ all_plugins | join(' ') }})"
+    line: "plugins=({{ user.activate.plugins | join(' ') }})"

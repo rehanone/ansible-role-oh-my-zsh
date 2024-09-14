@@ -1,0 +1,120 @@
+# code: language=ansible
+---
+# Setup configuration for the role
+- name: Setting OS variables
+  ansible.builtin.include_vars: "{{ lookup('ansible.builtin.first_found', params) }}"
+  vars:
+    params:
+      files:
+        - '{{ ansible_facts.os_family }}.yml'
+        - default.yml
+      paths:
+        - vars/os_family
+
+- name: Set oh_my_zsh_users_with_defaults
+  ansible.builtin.set_fact:
+    oh_my_zsh_users_with_defaults: >-
+      {{
+          oh_my_zsh_users_with_defaults | default([]) |
+          union( [oh_my_zsh_user_defaults | ansible.builtin.combine(user, recursive=true)] )
+      }}
+  loop: '{{ oh_my_zsh.users }}'
+  loop_control:
+    loop_var: user
+    label: '{{ user.name }}'
+
+- name: Set oh_my_zsh_with_default_users
+  ansible.builtin.set_fact:
+    oh_my_zsh_with_default_users:
+      users: '{{ oh_my_zsh_users_with_defaults }}'
+
+- name: Set oh_my_zsh_config
+  ansible.builtin.set_fact:
+    oh_my_zsh_config: >-
+      {{ oh_my_zsh_defaults |
+        ansible.builtin.combine( (oh_my_zsh | default(oh_my_zsh_defaults)), recursive=true ) |
+        ansible.builtin.combine( oh_my_zsh_with_default_users, recursive=true )
+      }}
+
+- name: Print oh_my_zsh_config dictionary if debug flag is set
+  ansible.builtin.debug:
+    var: oh_my_zsh_config
+  when: oh_my_zsh_config.debug
+
+
+# Main tasks for role
+
+# Setup dependencies
+- name: Install dependencies
+  become: "{{ ansible_facts.distribution != 'MacOSX' }}"
+  ansible.builtin.package:
+    name: '{{ package.name }}'
+    state: '{{ package.state }}'
+  loop: '{{ oh_my_zsh_config.dependencies }}'
+  loop_control:
+    loop_var: package
+    label: '{{ package.name }}'
+  when: package.manage
+
+- name: Install oh-my-zsh
+  ansible.builtin.include_tasks: install.yml
+  vars:
+    shell_paths: '{{ oh_my_zsh_config.shell_paths }}'
+    upstream: '{{ oh_my_zsh_config.upstream }}'
+  loop: '{{ oh_my_zsh_config.users | flatten(levels=1) }}'
+  loop_control:
+    loop_var: user
+    label: '{{ user.name }}'
+  when: user.manage and user.state == 'present'
+
+- name: Install/set current oh-my-zsh theme
+  ansible.builtin.include_tasks: theme.yml
+  vars:
+    themes: '{{ oh_my_zsh_config.custom_themes }}'
+  loop: '{{ oh_my_zsh_config.users | flatten(levels=1) }}'
+  loop_control:
+    loop_var: user
+    label: '{{ user.name }}'
+  when: user.manage and user.state == 'present'
+
+- name: Install oh-my-zsh plugins
+  ansible.builtin.include_tasks: plugin.yml
+  vars:
+    plugins: '{{ oh_my_zsh_config.custom_plugins }}'
+  loop: '{{ oh_my_zsh_config.users | flatten(levels=1) }}'
+  loop_control:
+    loop_var: user
+    label: '{{ user.name }}'
+  when: user.manage and user.state == 'present'
+
+- name: Install oh-my-zsh fregments
+  ansible.builtin.include_tasks: fregment.yml
+  loop: '{{ oh_my_zsh_config.users | flatten(levels=1) }}'
+  loop_control:
+    loop_var: user
+    label: '{{ user.name }}'
+  when: user.manage and user.state == 'present'
+
+- name: Install oh-my-zsh scripts
+  ansible.builtin.include_tasks: script.yml
+  vars:
+    scripts: '{{ oh_my_zsh_config.custom_scripts }}'
+  loop: '{{ oh_my_zsh_config.users | flatten(levels=1) }}'
+  loop_control:
+    loop_var: user
+    label: '{{ user.name }}'
+  when: user.manage and user.state == 'present'
+
+- name: Console setup for Debian family distributions
+  ansible.builtin.include_tasks: debian-console-setup.yml
+  when: ansible_facts.os_family == 'Debian'
+
+- name: Uninstall oh-my-zsh
+  ansible.builtin.include_tasks: uninstall.yml
+  vars:
+    shell_paths: '{{ oh_my_zsh_config.shell_paths }}'
+  loop: '{{ oh_my_zsh_config.users | flatten(levels=1) }}'
+  loop_control:
+    loop_var: user
+    label: '{{ user.name }}'
+  when: user.manage and user.state == 'absent'

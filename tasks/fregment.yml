@@ -1,10 +1,6 @@
 # code: language=ansible
 ---
-- name: Set all_fregments list
-  ansible.builtin.set_fact:
-    all_fregments: '{{ oh_my_zsh.zshrc_fregments | default(oh_my_zsh_zshrc_fregments) | list }}'
-
 - name: 'Set fregments in zshrc file for user: {{ user.name }}'
   ansible.builtin.blockinfile:
     path: '~{{ user.name }}/.zshrc'
-    block: "{{ all_fregments | join('\n') }}"
+    block: "{{ user.zshrc_fregments | join('\n') }}"

@@ -1,29 +1,46 @@
 # code: language=ansible
 ---
-# Default dictionary
-oh_my_zsh_defaults:
+# Default user config dictionary
+oh_my_zsh_user_defaults:
+  manage: true
   state: '{{ oh_my_zsh_state }}'
-  theme: '{{ oh_my_zsh_theme }}'
-  plugins: '{{ oh_my_zsh_plugins }}'
-  backup_zshrc: '{{ oh_my_zsh_backup_zshrc }}'
-  backup_keep_last_count: '{{ oh_my_zsh_backup_keep_last_count }}'
-  update_zshrc: '{{ oh_my_zsh_update_zshrc }}'
-  update_mode: '{{ oh_my_zsh_update_mode }}'
-  update_frequency: '{{ oh_my_zsh_update_frequency }}'
+  activate:
+    theme: '{{ oh_my_zsh_theme }}'
+    plugins: '{{ oh_my_zsh_plugins }}'
+    scripts: '{{ oh_my_zsh_scripts }}'
+  backup:
+    zshrc: '{{ oh_my_zsh_backup_zshrc }}'
+    keep_last_count: '{{ oh_my_zsh_backup_keep_last_count }}'
+  refresh:
+    frequency: '{{ oh_my_zsh_refresh_frequency }}'
+    mode: '{{ oh_my_zsh_refresh_mode }}'
+    zshrc: '{{ oh_my_zsh_refresh_zshrc }}'
   set_shell: '{{ oh_my_zsh_set_shell }}'
   zshrc_fregments: '{{ oh_my_zsh_zshrc_fregments }}'
-  scripts: '{{ oh_my_zsh_scripts }}'
 
-# Dependencies for Oh My Zsh
-oh_my_zsh_dependencies:
-  - git
-  - zsh
+# Defaults dictionary for oh_my_zsh role
+oh_my_zsh_defaults:
+  debug: '{{ oh_my_zsh_debug }}'
+  upstream:
+    repository: '{{ oh_my_zsh_upstream_repository }}'
+    revision: '{{ oh_my_zsh_upstream_revision }}'
+    manage: '{{ oh_my_zsh_upstream_manage }}'
+  dependencies:
+  - name: git
+    state: present
+    manage: false
+  - name: zsh
+    state: present
+    manage: true
+  custom_plugins: []
+  custom_themes: []
+  custom_scripts: []
+  shell_paths:
+    bash: '{{ oh_my_zsh_bash_path }}'
+    zsh: '{{ oh_my_zsh_zsh_path }}'
+  users: []
 
-# The source repo for oh-my-zsh
-oh_my_zsh_source: 'https://github.com/ohmyzsh/ohmyzsh.git'
-oh_my_zsh_revision: master
-
-oh_my_zsh_update_modes:
+oh_my_zsh_refresh_modes:
   - disabled
   - auto
   - reminder
