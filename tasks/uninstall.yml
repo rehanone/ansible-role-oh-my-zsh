@@ -1,20 +1,20 @@
 # code: language=ansible
 ---
-- name: Set default shell
+- name: Set default shell to bash
   become: true
   ansible.builtin.user:
     name: '{{ user.name }}'
-    shell: '{{ oh_my_zsh_bash_path }}'
-  when: oh_my_zsh.set_shell | default(oh_my_zsh_set_shell) | bool
+    shell: '{{ shell_paths.bash }}'
+  when: user.set_shell
 
-- name: Remove oh-my-zsh
+- name: Remove oh-my-zsh directory
   become: true
   become_user: '{{ user.name }}'
   ansible.builtin.file:
     path: '~{{ user.name }}/.oh-my-zsh'
     state: absent
 
-- name: Remove oh-my-zsh
+- name: Remove .zshrc
   become: true
   become_user: '{{ user.name }}'
   ansible.builtin.file:

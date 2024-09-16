@@ -1,5 +1,14 @@
 # code: language=ansible
 ---
+# Allows logging of the final configuration dictionary with all defaulted values which can be helpful for debugging
+# Default value for debug is false
+oh_my_zsh_debug: false
+
+# The source repo for oh-my-zsh
+oh_my_zsh_upstream_repository: 'https://github.com/ohmyzsh/ohmyzsh.git'
+oh_my_zsh_upstream_revision: master
+oh_my_zsh_upstream_manage: true
+
 # Default theme
 oh_my_zsh_theme: robbyrussell
 
@@ -11,17 +20,20 @@ oh_my_zsh_plugins:
 # May be overridden by `oh_my_zsh: state:` under each user.
 oh_my_zsh_state: present
 
-# Default update mode for Oh-My-Zsh
+# Default refresh mode for Oh-My-Zsh
 # accepted values are:
 #   disabled (default)
 #   auto
 #   reminder
-oh_my_zsh_update_mode: disabled
+oh_my_zsh_refresh_mode: disabled
 
-# Default update frequency in days. When the update mode is set to a value other
+# Default refresh frequency in days. When the update mode is set to a value other
 # than "disabled", this is the frequency (in days) to check for a new version.
 # The value 0 will check every time a new shell session starts.
-oh_my_zsh_update_frequency: 13
+oh_my_zsh_refresh_frequency: 13
+
+# The refresh behaviour of the .zshrc file as the template file changes in upstream repo. The default value is `true`
+oh_my_zsh_refresh_zshrc: true
 
 # Whether to write the ~/.zshrc file
 # May be overridden by `oh_my_zsh: write_zshrc:` under each user.
@@ -33,8 +45,6 @@ oh_my_zsh_backup_zshrc: true
 # THe count of last backups to keep of the previous .zshrc file when it is updated. The default value is 10
 oh_my_zsh_backup_keep_last_count: 10
 
-# The update behaviour of the .zshrc file as the template file changes in upstream repo. The default value is `true`
-oh_my_zsh_update_zshrc: true
 
 # Default .zshrc template. Can be overridden to use an external template.
 # oh_my_zsh_template: templates/zshrc.j2

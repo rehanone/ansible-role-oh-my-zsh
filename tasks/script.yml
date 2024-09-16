@@ -3,7 +3,7 @@
 - name: Set merged_scripts list
   ansible.builtin.set_fact:
     merged_scripts: >-
-      {{ (oh_my_zsh.scripts | default(oh_my_zsh_scripts) | list) | community.general.lists_mergeby(
+      {{ user.activate.scripts | community.general.lists_mergeby(
                     scripts,
                     'name',
                     recursive=True,

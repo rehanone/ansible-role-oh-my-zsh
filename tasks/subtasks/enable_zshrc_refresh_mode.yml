@@ -1,0 +1,10 @@
+# code: language=ansible
+---
+- name: 'Enable refresh mode in zshrc to: {{ refresh_mode }}'
+  become: true
+  become_user: '{{ username }}'
+  ansible.builtin.lineinfile:
+    path: '~{{ username }}/.zshrc'
+    regexp: |- 
+      .*zstyle\ \':omz:update\'\ mode\ {{ refresh_mode }}.*
+    line: "zstyle ':omz:update' mode {{ refresh_mode }}"

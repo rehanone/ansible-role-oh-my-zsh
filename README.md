@@ -1,4 +1,4 @@
-Ansible Role: Oh My Zsh
+Ansible Role: oh-my-zsh
 =======================
 
 [![Tests](https://github.com/gantsign/ansible-role-oh-my-zsh/workflows/Tests/badge.svg)](https://github.com/gantsign/ansible-role-oh-my-zsh/actions?query=workflow%3ATests)
@@ -106,26 +106,26 @@ plugins:
 # Important: oh-my-zsh is installed per user so you need to specify the users to install it for.
 users:
   - name: example1
-    oh_my_zsh:
+    activate:
       theme: robbyrussell
       plugins:
         - git
-      update_mode: reminder
-      update_frequency: 3
-      write_zshrc: false
+      refresh:
+        mode: reminder
+        frequency: 3
   - name: example2
-    oh_my_zsh:
+    activate:
       theme: robbyrussell
       plugins:
         - git
         - mvn
-      update_mode: auto
-      update_frequency: 10
+      refresh:
+        mode: auto
+        frequency: 10
   - name: example3
-    oh_my_zsh:
-      install: false
+    state: absent
   - name: example4
-    oh_my_zsh:
+    activate:
       theme: powerlevel10k
       plugins:
         - git
@@ -133,8 +133,9 @@ users:
         - zsh-autosuggestions
         - zsh-hist
         - zsh-syntax-highlighting
-      update_mode: auto
-      update_frequency: 0
+      refresh:
+        mode: auto
+        frequency: 10
 ```
 
 Example Playbook
@@ -144,19 +145,21 @@ Example Playbook
 - hosts: servers
   roles:
     - role: gantsign.oh-my-zsh
-      themes:
-        - name: powerlevel10k
-          repo: https://github.com/romkatv/powerlevel10k.git
-      plugins:
+      vars:
+        oh_my_zsh:
+        custom_plugins:
         - name: zsh-autosuggestions
           repo: https://github.com/zsh-users/zsh-autosuggestions.git
         - name: zsh-hist
           repo: https://github.com/marlonrichert/zsh-hist.git
         - name: zsh-syntax-highlighting
           repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
-      users:
+        custom_themes:
+        - name: powerlevel10k
+          repo: https://github.com/romkatv/powerlevel10k.git
+        users:
         - name: example
-          oh_my_zsh:
+          activate:
             theme: powerlevel10k
             plugins:
               - git
@@ -164,6 +167,8 @@ Example Playbook
               - zsh-autosuggestions
               - zsh-hist
               - zsh-syntax-highlighting
+          refresh:
+            zshrc: true
 ```
 
 More Roles From GantSign
