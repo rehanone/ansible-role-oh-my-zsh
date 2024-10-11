@@ -42,7 +42,7 @@
 - name: Find previous backups of .zshrc
   become: true
   ansible.builtin.shell:
-    cmd: 'ls -1tr .zshrc.[0-9]*'
+    cmd: 'ls -1tr .zshrc.[0-9]* || true'
     chdir: '~{{ user.name }}'
   changed_when: false
   register: backups_to_clean
