@@ -10,7 +10,7 @@
                     list_merge='replace'
                  ) }}
 
-- name: 'Ensure directory exists: {{ script.path }}'
+- name: Ensure scripts home directory exists
   become: true
   become_user: '{{ user.name }}'
   ansible.builtin.file:

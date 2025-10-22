@@ -22,14 +22,13 @@ Requirements
 
         * Debian
 
-            * Stretch (9)
             * Buster (10)
             * Bullseye (11)
             * Bookworm (12)
+            * Trixie (13)
 
         * Ubuntu
 
-            * Bionic (18.04)
             * Focal (20.04)
             * Jammy (22.04)
             * Noble (24.04)
@@ -43,8 +42,9 @@ Requirements
 
         * Fedora
 
-            * 39
             * 40
+            * 41
+            * 42
 
     * SUSE Family
 
